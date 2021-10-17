@@ -382,7 +382,7 @@ boost:
   macports: [boost]
   nixos: [boost]
   openembedded: [boost@openembedded-core]
-  opensuse: [libboost_headers1_66_0-devel, libboost_system1_66_0-devel, libboost_thread1_66_0-devel, libboost_chrono1_66_0-devel, libboost_date_time1_66_0-devel, libboost_serialization1_66_0-devel, libboost_filesystem1_66_0-devel, libboost_program_options1_66_0-devel, libboost_signals1_66_0-devel, libboost_regex1_66_0-devel]
+  opensuse: [libboost_atomic1_66_0-devel, libboost_headers1_66_0-devel, libboost_system1_66_0-devel, libboost_thread1_66_0-devel, libboost_chrono1_66_0-devel, libboost_date_time1_66_0-devel, libboost_serialization1_66_0-devel, libboost_filesystem1_66_0-devel, libboost_program_options1_66_0-devel, libboost_python-py2_7-1_66_0-devel, libboost_python-py3-1_66_0-devel, libboost_signals1_66_0-devel, libboost_regex1_66_0-devel, libboost_iostreams1_66_0-devel]
   rhel: [boost-devel, 'boost-python%{python3_pkgversion}-devel']
   slackware:
     slackpkg:
@@ -854,6 +854,17 @@ dvipng:
   gentoo: [app-text/dvipng]
   opensuse: [texlive-dvipng-bin]
   ubuntu: [dvipng]
+e2fsprogs:
+  alpine: [e2fsprogs]
+  arch: [e2fsprogs]
+  debian: [e2fsprogs]
+  fedora: [e2fsprogs]
+  gentoo: [sys-fs/e2fsprogs]
+  macports: [e2fsprogs]
+  nixos: [e2fsprogs]
+  opensuse: [e2fsprogs]
+  rhel: [e2fsprogs]
+  ubuntu: [e2fsprogs]
 eclipse:
   arch: [eclipse, eclipse-rcp, eclipse-emf, eclipse-pde]
   debian: [eclipse, eclipse-rcp, eclipse-xsd, eclipse-pde]
@@ -2066,7 +2077,6 @@ jq:
   fedora: [jq]
   gentoo: [app-misc/jq]
   nixos: [jq]
-  openembedded: [jq@meta-oe]
   ubuntu: [jq]
 julius-voxforge:
   arch: [voxforge-am-julius]
@@ -2408,6 +2418,14 @@ libboost-math-dev:
   opensuse: [libboost_math1_66_0-devel]
   rhel: [boost-devel]
   ubuntu: [libboost-math-dev]
+libboost-numpy-dev:
+  debian: [libboost-numpy-dev]
+  fedora: [boost-devel]
+  gentoo: [dev-libs/boost]
+  nixos: [boost]
+  opensuse: [libboost_numpy-py2_7-1_66_0, libboost_numpy-py3-1_66_0]
+  rhel: [boost-devel]
+  ubuntu: [libboost-numpy-dev]
 libboost-program-options:
   debian:
     buster: [libboost-program-options1.67.0]
@@ -3733,7 +3751,6 @@ liblttng-ust-dev:
   fedora: [lttng-ust-devel]
   gentoo: [dev-util/lttng-ust]
   nixos: [lttng-ust]
-  openembedded: [lttng-ust@openembedded-core]
   rhel: [lttng-ust-devel]
   ubuntu: [liblttng-ust-dev]
 liblzma-dev:
@@ -5469,6 +5486,16 @@ libwebsocketpp-dev:
   openembedded: [websocketpp@meta-oe]
   rhel: [websocketpp-devel]
   ubuntu: [libwebsocketpp-dev]
+libwebsockets-dev:
+  alpine: [libwebsockets-dev]
+  arch: [libwebsockets]
+  debian: [libwebsockets-dev]
+  fedora: [libwebsockets-devel]
+  gentoo: [net-libs/libwebsockets]
+  nixos: [libwebsockets]
+  opensuse: [libwebsockets-devel]
+  rhel: [libwebsockets-devel]
+  ubuntu: [libwebsockets-dev]
 libx11:
   alpine: [libx11]
   arch: [libx11]
