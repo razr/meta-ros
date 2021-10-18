@@ -1,0 +1,12 @@
+diff --git a/include/ur_client_library/control/script_sender.h b/include/ur_client_library/control/script_sender.h
+index 301f5b9..95db332 100644
+--- a/include/ur_client_library/control/script_sender.h
++++ b/include/ur_client_library/control/script_sender.h
+@@ -31,6 +31,7 @@
+ #define UR_CLIENT_LIBRARY_SCRIPT_SENDER_H_INCLUDED
+ 
+ #include <thread>
++#include <string>
+ 
+ #include "ur_client_library/comm/tcp_server.h"
+ #include "ur_client_library/log.h"
