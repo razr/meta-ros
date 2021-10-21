@@ -14,6 +14,20 @@ jobs:
           ref: build
           path: build
 
+      - name: Increase free space
+        # Remove Android and dotnet
+        run: |
+          sudo apt-get install -y gawk wget git-core diffstat unzip texinfo gcc-multilib \
+          build-essential chrpath socat cpio python python3-pip python3-pexpect \
+          xz-utils debianutils iputils-ping \
+          python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev xterm \
+          g++-multilib locales lsb-release python3-distutils time
+          sudo locale-gen en_US.utf8
+          # sudo apt remove --purge dotnet-sdk-5.0
+          # sudo apt remove --purge dotnet-runtime-5.0.101
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+
       - name: Get available space
         # We need at least 20GB to build kernel plus some space for the dependencies
         run: |
