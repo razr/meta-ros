@@ -7,11 +7,12 @@ on:
 jobs:
   ur5-driver:
     runs-on: crops/poky:ubuntu-20.04
+    steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           ref: build
-              path: build
+          path: build
 
       - name: Get available space
         # We need at least 20GB to build kernel plus some space for the dependencies
