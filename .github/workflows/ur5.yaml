@@ -1,0 +1,26 @@
+name: UR5 driver
+
+on:
+  pull_request:
+  workflow_dispatch:
+    
+jobs:
+  ur5-driver:
+    runs-on: crops/poky:ubuntu-20.04
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: build
+              path: build
+
+      - name: Get available space
+        # We need at least 20GB to build kernel plus some space for the dependencies
+        run: |
+          cd /
+          df -H
+
+      - name: Get a list of the installed packages
+        # We might probably delete some of them to increase free space
+        run: |
+          sudo apt-get update
+          apt list --installed
