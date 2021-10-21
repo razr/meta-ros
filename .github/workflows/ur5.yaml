@@ -35,8 +35,21 @@ jobs:
           cd /
           df -H
 
-      - name: Get a list of the installed packages
-        # We might probably delete some of them to increase free space
+      - name: setup Yocto
         run: |
-          sudo apt-get update
-          apt list --installed
+          mkdir conf
+          ln -snf ../conf build/.
+          distro=ros2
+          ros_distro=galactic
+          oe_release_series=hardknott
+          cfg=$distro-$ros_distro-$oe_release_series.mcf
+          cp build/files/$cfg conf/.
+
+          export MCF_META_ROS_REPO_URL=git://github.com/razr/meta-ros.git
+          build/scripts/mcf -f conf/$cfg
+          cd -
+
+      - name: Build
+        run: |
+          source openembedded-core/oe-init-build-env
+          cd && ls conf
