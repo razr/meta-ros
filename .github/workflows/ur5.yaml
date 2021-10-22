@@ -62,7 +62,7 @@ jobs:
           bitbake -p ros-core
           bitbake linux-yocto
 
-      - name: Build (Part 1)
+      - name: Build (Part 2)
         run: |
           cd $GITHUB_WORKSPACE
           bitbake ros-image-core
