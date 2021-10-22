@@ -52,7 +52,7 @@ jobs:
           cat .git/config
           git checkout hardknott-ur5-gh-action
 
-      - name: Build
+      - name: Build (Part 1)
         run: |
           cd $GITHUB_WORKSPACE
           source openembedded-core/oe-init-build-env
@@ -60,6 +60,11 @@ jobs:
           cd ..
           cat ./meta-ros/.github/workflows/ros-additions.conf >> ./conf/local.conf
           bitbake -p ros-core
+          bitbake linux-yocto
+
+      - name: Build (Part 1)
+        run: |
+          cd $GITHUB_WORKSPACE
           bitbake ros-image-core
 
       - uses: actions/upload-artifact@v2
