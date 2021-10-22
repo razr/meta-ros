@@ -46,11 +46,11 @@ jobs:
           cp build/files/$cfg conf/.
 
           export MCF_META_ROS_REPO_URL=git://github.com/razr/meta-ros.git
-          oldpwd=`pwd`
+          echo `pwd`
           build/scripts/mcf -f conf/$cfg
-          cd $oldpwd
 
       - name: Build
         run: |
+          cd $GITHUB_WORKSPACE/..
           source openembedded-core/oe-init-build-env
           cd .. && ls conf
