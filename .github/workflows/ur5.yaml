@@ -48,6 +48,10 @@ jobs:
           export MCF_META_ROS_REPO_URL=git://github.com/razr/meta-ros.git
           build/scripts/mcf -f conf/$cfg
 
+          cd $GITHUB_WORKSPACE/meta-ros
+          cat .git/config
+          git checkout hardknott-ur5-gh-action
+
       - name: Build
         run: |
           cd $GITHUB_WORKSPACE
