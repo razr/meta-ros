@@ -60,7 +60,7 @@ jobs:
           cd ..
           cat ./meta-ros/.github/workflows/ros-additions.conf >> ./conf/local.conf
           bitbake -p ros-core
-          bitbake linux-yocto
+          bitbake linux-raspberrypi
 
       - name: Build (Part 2)
         run: |
