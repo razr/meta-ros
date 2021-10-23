@@ -14,7 +14,7 @@ jobs:
           ref: build
           path: build
 
-      - name: Increase free space
+      - name: Increase available space
         # Remove Android and dotnet
         run: |
           sudo apt-get update
@@ -30,12 +30,11 @@ jobs:
           sudo rm -rf /usr/share/dotnet
 
       - name: Get available space
-        # We need at least 20GB to build kernel plus some space for the dependencies
+        # We need at least 20GB to build Yocto
         run: |
-          cd /
           df -H
 
-      - name: Setup Yocto
+      - name: Setup Yocto build
         run: |
           mkdir conf
           ln -snf ../conf build/.
@@ -53,6 +52,7 @@ jobs:
           git checkout hardknott-ur5-gh-action
 
       - name: Build (Part 1)
+        # We need to split build in two parts, since it takes more than 6 hours
         run: |
           cd $GITHUB_WORKSPACE
           source openembedded-core/oe-init-build-env
@@ -60,12 +60,19 @@ jobs:
           cd ..
           cat ./meta-ros/.github/workflows/ros-additions.conf >> ./conf/local.conf
           bitbake -p ros-core
-          bitbake linux-raspberrypi
+          bitbake rclcpp
 
       - name: Build (Part 2)
         run: |
           cd $GITHUB_WORKSPACE
+          source openembedded-core/oe-init-build-env
+          
+          cd ..
           bitbake ros-image-core
+
+      - name: Get available space again
+        run: |
+          df -H
 
       - uses: actions/upload-artifact@v2
         with:
