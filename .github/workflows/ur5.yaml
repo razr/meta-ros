@@ -1,13 +1,12 @@
 name: UR5 driver
 
 on:
-  pull_request:
   workflow_dispatch:
     
 jobs:
-  ur5-driver:
+  ur5-driver-part1:
+    name: UR5 Yocto Build Part 1
     runs-on: ubuntu-20.04
-    timeout-minutes: 1200
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -15,8 +14,7 @@ jobs:
           ref: build
           path: build
 
-      - name: Increase available space
-        # Remove Android and dotnet
+      - name: Install Yocto deps
         run: |
           sudo apt-get update
           sudo apt-get install -y gawk wget git-core diffstat unzip texinfo gcc-multilib \
@@ -25,13 +23,17 @@ jobs:
           python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev xterm \
           g++-multilib locales lsb-release python3-distutils time
           sudo locale-gen en_US.utf8
+
+      - name: Increase available space
+        # Remove Android and dotnet
+        run: |
           # sudo apt remove --purge dotnet-sdk-5.0
           # sudo apt remove --purge dotnet-runtime-5.0.101
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /usr/share/dotnet
 
       - name: Get available space
-        # We need at least 20GB to build Yocto
+        # We need at least 32GB to build Yocto
         run: |
           df -H
 
@@ -63,17 +65,72 @@ jobs:
           bitbake -p ros-core
           bitbake rclcpp
 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: yocto-build-artifacts
+          path: |
+            tmp
+            ros_common_artifacts
+
+  ur5-driver-part2:
+    name: UR5 Yocto Build Part 2
+    needs: ur5-driver-part1
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: build
+          path: build
+
+      - name: Install Yocto deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gawk wget git-core diffstat unzip texinfo gcc-multilib \
+          build-essential chrpath socat cpio python python3-pip python3-pexpect \
+          xz-utils debianutils iputils-ping \
+          python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev xterm \
+          g++-multilib locales lsb-release python3-distutils time
+          sudo locale-gen en_US.utf8
+
+      - name: Increase available space
+        # Remove Android and dotnet
+        run: |
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+
+      - name: Setup Yocto build
+        run: |
+          mkdir conf
+          ln -snf ../conf build/.
+          distro=ros2
+          ros_distro=galactic
+          oe_release_series=hardknott
+          cfg=$distro-$ros_distro-$oe_release_series.mcf
+          cp build/files/$cfg conf/.
+
+          export MCF_META_ROS_REPO_URL=git://github.com/razr/meta-ros.git
+          build/scripts/mcf -f conf/$cfg
+
+          cd $GITHUB_WORKSPACE/meta-ros
+          cat .git/config
+          git checkout hardknott-ur5-gh-action
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: yocto-build-artifacts
+
+      - uses: geekyeggo/delete-artifact@v1.0.0
+        with:
+          name: yocto-build-artifacts
+
       - name: Build (Part 2)
         run: |
           cd $GITHUB_WORKSPACE
           source openembedded-core/oe-init-build-env
-          
+
           cd ..
           bitbake ros-image-core
-
-      - name: Get available space again
-        run: |
-          df -H
 
       - uses: actions/upload-artifact@v2
         with:
