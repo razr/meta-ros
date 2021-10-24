@@ -25,15 +25,13 @@ jobs:
     needs: job1
     runs-on: ubuntu-latest
     steps:
-      - name: Download artifacts
-      - uses: actions/download-artifact@v2
-        with:
-          name: yocto-build-artifacts
+    - uses: actions/download-artifact@v2
+      with:
+        name: yocto-build-artifacts
 
-      - run: cat tmp/work/world.txt
-      - run: cat ros_common_artifacts/downloads/world.txt
+    - run: cat tmp/work/world.txt
+    - run: cat ros_common_artifacts/downloads/world.txt
 
-      - name: Delete artifacts
-      - uses: geekyeggo/delete-artifact@v1.0.0
-        with:
-          name: yocto-build-artifacts
+    - uses: geekyeggo/delete-artifact@v1.0.0
+      with:
+        name: yocto-build-artifacts
