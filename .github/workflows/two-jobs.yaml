@@ -16,8 +16,9 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: yocto-build-artifacts
-        path: tmp
-        path: ros_common_artifacts
+        path: |
+          tmp
+          ros_common_artifacts
 
   job2:
     runs-on: ubuntu-latest
