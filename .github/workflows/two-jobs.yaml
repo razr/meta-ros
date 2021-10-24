@@ -1,0 +1,31 @@
+name: Two jobs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  job1:
+
+    runs-on: ubuntu-latest
+    steps:
+    - run: mkdir -p tmp/work
+    - run: mkdir -p ros_common_artifacts/downloads && mkdir -p ros_common_artifacts/sstate-cache-hardknott
+    - run: echo hello > tmp/work/world.txt
+    - run: echo hello > ros_common_artifacts/downloadsk/world.txt
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: yocto-build-artifacts
+        path: tmp
+        path: ros_common_artifacts
+
+  job2:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        name: yocto-build-artifacts
+
+    - run: cat tmp/work/world.txt
+    - run: ros_common_artifacts/downloadsk/world.txt
