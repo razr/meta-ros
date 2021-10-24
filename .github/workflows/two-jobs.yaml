@@ -13,24 +13,27 @@ jobs:
     - run: echo hello > tmp/work/world.txt
     - run: echo downloads > ros_common_artifacts/downloads/world.txt
     - run: echo sstate-cache-hardknott > ros_common_artifacts/sstate-cache-hardknott/world.txt
-    - run: XZ_OPT=-9 tar -Jcvf sstate-cache-hardknott.tar.xz ros_common_artifacts/sstate-cache-hardknott
-    - run: XZ_OPT=-9 tar -Jcvf downloads.tar.xz ros_common_artifacts/downloads
-    - run: XZ_OPT=-9 tar -Jcvf tmp.tar.xz tmp
 
+    - run: XZ_OPT=-9 tar -Jcvf sstate-cache-hardknott.tar.xz ros_common_artifacts/sstate-cache-hardknott
     - uses: actions/upload-artifact@v2
       with:
         name: sstate-cache-hardknott-artifacts
         path: sstate-cache-hardknott.tar.xz
+    - run: rm sstate-cache-hardknott.tar.xz
 
+    - run: XZ_OPT=-9 tar -Jcvf downloads.tar.xz ros_common_artifacts/downloads
     - uses: actions/upload-artifact@v2
       with:
         name: downloads-artifacts
         path: downloads.tar.xz
+    - run: rm downloads.tar.xz
 
+    - run: XZ_OPT=-9 tar -Jcvf tmp.tar.xz tmp
     - uses: actions/upload-artifact@v2
       with:
         name: tmp-artifacts
         path: tmp.tar.xz
+    - run: rm tmp.tar.xz
 
   job2:
     name: Yocto Build Part 2
@@ -63,3 +66,4 @@ jobs:
 
     - run: cat tmp/work/world.txt
     - run: cat ros_common_artifacts/downloads/world.txt
+    - run: cat ros_common_artifacts/sstate-cache-hardknott/world.txt
