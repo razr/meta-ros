@@ -11,14 +11,26 @@ jobs:
     - run: mkdir -p tmp/work
     - run: mkdir -p ros_common_artifacts/downloads && mkdir -p ros_common_artifacts/sstate-cache-hardknott
     - run: echo hello > tmp/work/world.txt
-    - run: echo hello > ros_common_artifacts/downloads/world.txt
+    - run: echo downloads > ros_common_artifacts/downloads/world.txt
+    - run: echo sstate-cache-hardknott > ros_common_artifacts/sstate-cache-hardknott/world.txt
+    - run: XZ_OPT=-9 tar -Jcvf sstate-cache-hardknott.tar.xz ros_common_artifacts/sstate-cache-hardknott
+    - run: XZ_OPT=-9 tar -Jcvf downloads.tar.xz ros_common_artifacts/downloads
+    - run: XZ_OPT=-9 tar -Jcvf tmp.tar.xz tmp
 
     - uses: actions/upload-artifact@v2
       with:
-        name: yocto-build-artifacts
-        path: |
-          tmp
-          ros_common_artifacts
+        name: sstate-cache-hardknott-artifacts
+        path: sstate-cache-hardknott.tar.xz
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: downloads-artifacts
+        path: downloads.tar.xz
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: tmp-artifacts
+        path: tmp.tar.xz
 
   job2:
     name: Yocto Build Part 2
@@ -27,11 +39,27 @@ jobs:
     steps:
     - uses: actions/download-artifact@v2
       with:
-        name: yocto-build-artifacts
+        name: sstate-cache-hardknott-artifacts
+    - run: tar xf sstate-cache-hardknott.tar.xz && rm sstate-cache-hardknott.tar.xz
+    - uses: geekyeggo/delete-artifact@v1.0.0
+      with:
+        name: sstate-cache-hardknott-artifacts
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: downloads-artifacts
+    - run: tar xf downloads.tar.xz && rm downloads.tar.xz
+    - uses: geekyeggo/delete-artifact@v1.0.0
+      with:
+        name: downloads-artifacts
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: tmp-artifacts
+    - run: tar xf tmp.tar.xz && rm tmp.tar.xz
+    - uses: geekyeggo/delete-artifact@v1.0.0
+      with:
+        name: tmp-artifacts
 
     - run: cat tmp/work/world.txt
     - run: cat ros_common_artifacts/downloads/world.txt
-
-    - uses: geekyeggo/delete-artifact@v1.0.0
-      with:
-        name: yocto-build-artifacts
