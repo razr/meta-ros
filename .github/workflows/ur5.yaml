@@ -65,12 +65,26 @@ jobs:
           bitbake -p ros-core
           bitbake rclcpp
 
+      - run: XZ_OPT=-9 tar -Jcvf sstate-cache-hardknott.tar.xz ros_common_artifacts/sstate-cache-hardknott
       - uses: actions/upload-artifact@v2
         with:
-          name: yocto-build-artifacts
-          path: |
-            tmp
-            ros_common_artifacts
+          name: sstate-cache-hardknott-artifacts
+          path: sstate-cache-hardknott.tar.xz
+      - run: rm sstate-cache-hardknott.tar.xz
+
+      - run: XZ_OPT=-9 tar -Jcvf downloads.tar.xz ros_common_artifacts/downloads
+      - uses: actions/upload-artifact@v2
+        with:
+          name: downloads-artifacts
+          path: downloads.tar.xz
+      - run: rm downloads.tar.xz
+
+      - run: XZ_OPT=-9 tar -Jcvf tmp.tar.xz tmp
+      - uses: actions/upload-artifact@v2
+        with:
+          name: tmp-artifacts
+          path: tmp.tar.xz
+      - run: rm tmp.tar.xz
 
   ur5-driver-part2:
     name: UR5 Yocto Build Part 2
@@ -118,11 +132,27 @@ jobs:
 
       - uses: actions/download-artifact@v2
         with:
-          name: yocto-build-artifacts
-
+          name: sstate-cache-hardknott-artifacts
+      - run: tar xf sstate-cache-hardknott.tar.xz && rm sstate-cache-hardknott.tar.xz
       - uses: geekyeggo/delete-artifact@v1.0.0
         with:
-          name: yocto-build-artifacts
+          name: sstate-cache-hardknott-artifacts
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: downloads-artifacts
+      - run: tar xf downloads.tar.xz && rm downloads.tar.xz
+      - uses: geekyeggo/delete-artifact@v1.0.0
+        with:
+          name: downloads-artifacts
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: tmp-artifacts
+      - run: tar xf tmp.tar.xz && rm tmp.tar.xz
+      - uses: geekyeggo/delete-artifact@v1.0.0
+        with:
+          name: tmp-artifacts
 
       - name: Build (Part 2)
         run: |
