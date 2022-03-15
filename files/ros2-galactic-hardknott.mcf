@@ -48,7 +48,7 @@ OpenEmbeddedVersion = '3.3.3-41-hardknott'
 
 # Allow the URL and branch for meta-ros to be overridden by settings in the environment.
 from os import getenv
-MetaRos_RepoURL = getenv('MCF_META_ROS_REPO_URL', 'git://github.com/ros/meta-ros.git')
+MetaRos_RepoURL = getenv('MCF_META_ROS_REPO_URL', 'https://github.com/ros/meta-ros.git')
 MetaRos_Branch  = getenv('MCF_META_ROS_BRANCH',   OE_Branch)
 MetaRos_Commit  = getenv('MCF_META_ROS_COMMIT',   '6762cd4c3')
 
@@ -59,12 +59,12 @@ MetaRos_Commit  = getenv('MCF_META_ROS_COMMIT',   '6762cd4c3')
 # Note that the github.com/openembedded repositories are read-only mirrors of
 # the authoritative repositories on git.openembedded.org .
 Layers = [
-('bitbake',                            -1, 'git://github.com/openembedded/bitbake.git',              {'branch': Bitbake_Branch,       'commit': 'fdc2d3df'},          {}),
+('bitbake',                            -1, 'https://github.com/openembedded/bitbake.git',              {'branch': Bitbake_Branch,       'commit': 'fdc2d3df'},          {}),
 
-('meta',                                5, 'git://github.com/openembedded/openembedded-core.git',    {'branch': OE_Branch,            'commit': '366070c476'},        {}),
+('meta',                                5, 'https://github.com/openembedded/openembedded-core.git',    {'branch': OE_Branch,            'commit': '366070c476'},        {}),
 
-('meta-oe',                            10, 'git://github.com/openembedded/meta-openembedded.git',    {'branch': OE_Branch,            'commit': 'f44e1a2b57'},        {}),
-('meta-python',                        13, 'git://github.com/openembedded/meta-openembedded.git',    {},                                                              {}),
+('meta-oe',                            10, 'https://github.com/openembedded/meta-openembedded.git',    {'branch': OE_Branch,            'commit': 'f44e1a2b57'},        {}),
+('meta-python',                        13, 'https://github.com/openembedded/meta-openembedded.git',    {},                                                              {}),
 
 ('meta-ros-common',                    37, MetaRos_RepoURL,                                          {'branch': MetaRos_Branch,       'commit': MetaRos_Commit},      {}),
 ('meta-ros2',                          38, MetaRos_RepoURL,                                          {},                                                              {}),
