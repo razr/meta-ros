@@ -2,6 +2,7 @@ name: 'Configure meta-ros build'
 
 on:
   workflow_call:
+  workflow_dispatch:
     inputs:
       distro:
         description: 'OpenEmbedded distro (ros1, ros2, or webos)'
