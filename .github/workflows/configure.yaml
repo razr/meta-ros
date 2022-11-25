@@ -45,7 +45,7 @@ jobs:
     name: Configure Yocto Build
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout code
+      - name: Checkout ${{ inputs.build_branch } branch
         uses: actions/checkout@v3
         with:
           ref: ${{ inputs.build_branch }}
@@ -74,3 +74,8 @@ jobs:
           if test ! -z ${{ inputs.meta_ros_commit }}; then export MCF_META_ROS_COMMIT=${{ inputs.meta_ros_commit }}; fi
           cp build/files/$cfg conf/.
           build/scripts/mcf -f conf/$cfg
+
+      - name: Checkout ${{ inputs.meta_ros_branch } branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.meta_ros_branch }}
