@@ -81,4 +81,4 @@ jobs:
           source openembedded-core/oe-init-build-env
           cd ..
           cat ./build/.github/workflows/ros-additions.conf >> ./conf/local.conf
-          bitbake bitbake ros-image-core
+          bitbake ros-image-core
