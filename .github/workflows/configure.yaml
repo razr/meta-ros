@@ -45,7 +45,7 @@ jobs:
     name: Configure Yocto Build
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout ${{ inputs.build_branch } branch
+      - name: Checkout ${{ inputs.build_branch }} branch
         uses: actions/checkout@v3
         with:
           ref: ${{ inputs.build_branch }}
@@ -61,7 +61,7 @@ jobs:
           g++-multilib locales lsb-release python3-distutils time
           sudo locale-gen en_US.utf8
 
-      - name: Generate conf file
+      - name: Setup variable and clone repos
         run: |
           mkdir conf
           ln -snf ../conf build/.
@@ -75,7 +75,10 @@ jobs:
           cp build/files/$cfg conf/.
           build/scripts/mcf -f conf/$cfg
 
-      - name: Checkout ${{ inputs.meta_ros_branch } branch
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ inputs.meta_ros_branch }}
+      - name: Build ros-image-core
+        run: |
+          cd $GITHUB_WORKSPACE
+          source openembedded-core/oe-init-build-env
+          cd ..
+          cat ./build/.github/workflows/ros-additions.conf >> ./conf/local.conf
+          bitbake bitbake ros-image-core
