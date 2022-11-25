@@ -1,0 +1,65 @@
+name: Configure meta-ros build
+
+on:
+    workflow_call:
+    inputs:
+      distro:
+        description: 'OpenEmbedded distro (ros1, ros2, or webos)'
+        default: 'ros2'
+        required: false
+        type: string
+      ros_distro:
+        description: 'ROS distro (melodic, noetic, dashing, eloquent, foxy, galactic, humble, or rolling)'
+        default: 'humble'
+        required: false
+        type: string
+      oe_release_series:
+        description: 'OpenEmbedded release series (dunfell, gatesgarth, hardknott, honister, kirkstone, langdale, or mickledore)'
+        default: 'honister'
+        required: false
+        type: string
+      meta_ros_repo_url:
+        description: 'meta-ros repository URL'
+        default: ''
+        required: false
+        type: string
+      build_branch:
+        description: 'meta-ros build branch name'
+        default: 'build'
+        required: false
+        type: string
+
+jobs:
+  configure:
+    name: Configure Yocto Build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.build_branch }}
+          path: build
+
+      - name: Install Yocto dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gawk wget git-core diffstat unzip texinfo gcc-multilib \
+          build-essential chrpath socat cpio python python3-pip python3-pexpect \
+          xz-utils debianutils iputils-ping \
+          python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev xterm \
+          g++-multilib locales lsb-release python3-distutils time
+          sudo locale-gen en_US.utf8
+
+      - name: Generate conf file
+        run: |
+          mkdir conf
+          ln -snf ../conf build/.
+
+          distro=${{ inputs.distro }}
+          ros_distro=${{ inputs.ros_distro }}
+          oe_release_series=${{ inputs.oe_release_series }}
+          cfg=$distro-$ros_distro-$oe_release_series.mcf
+          if test -z ${{ inputs.meta_ros_repo_url }}; then export MCF_META_ROS_REPO_URL=${{ inputs.meta_ros_repo_url }}; fi
+
+          cp build/files/$cfg conf/.
+          build/scripts/mcf -f conf/$cfg
