@@ -65,8 +65,8 @@ jobs:
           ros_distro=${{ inputs.ros_distro }}
           oe_release_series=${{ inputs.oe_release_series }}
           cfg=$distro-$ros_distro-$oe_release_series.mcf
-          if test -z ${{ inputs.meta_ros_repo_url }}; then export MCF_META_ROS_REPO_URL=${{ inputs.meta_ros_repo_url }}; fi
-          if test -z ${{ inputs.meta_ros_branch }}; then export MCF_META_ROS_BRANCH=${{ inputs.meta_ros_branch }}; fi
+          if test ! -z ${{ inputs.meta_ros_repo_url }}; then export MCF_META_ROS_REPO_URL=${{ inputs.meta_ros_repo_url }}; fi
+          if test ! -z ${{ inputs.meta_ros_branch }}; then export MCF_META_ROS_BRANCH=${{ inputs.meta_ros_branch }}; fi
 
           cp build/files/$cfg conf/.
           build/scripts/mcf -f conf/$cfg
