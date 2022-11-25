@@ -1,4 +1,4 @@
-name: Configure meta-ros build
+name: 'Configure meta-ros build'
 
 on:
   workflow_call:
