@@ -90,14 +90,14 @@ jobs:
           ros_distro=${{ inputs.ros_distro }}
           oe_release_series=${{ inputs.oe_release_series }}
           cfg=$distro-$ros_distro-$oe_release_series.mcf
-          echo "add machine ${{ inputs.machine }} to $distro-$ros_distro-$oe_release_series.mcf"
-          sed -i "s/^Machines = .*/Machines = ['${{ inputs.machine }}']/g" build/files/$distro-$ros_distro-$oe_release_series.mcf
-          echo "remove raspberrypi"
-          sed -i '/raspberry/d' build/files/$distro-$ros_distro-$oe_release_series.mcf
           if test ! -z ${{ inputs.meta_ros_repo_url }}; then export MCF_META_ROS_REPO_URL=${{ inputs.meta_ros_repo_url }}; fi
           if test ! -z ${{ inputs.meta_ros_branch }}; then export MCF_META_ROS_BRANCH=${{ inputs.meta_ros_branch }}; fi
           if test ! -z ${{ inputs.meta_ros_commit }}; then export MCF_META_ROS_COMMIT=${{ inputs.meta_ros_commit }}; fi
           cp build/files/$cfg conf/.
+          echo "add machine ${{ inputs.machine }} to conf/$cfg.mcf"
+          sed -i "s/^Machines = .*/Machines = ['${{ inputs.machine }}']/g" conf/$cfg.mcf
+          echo "remove raspberrypi"
+          sed -i '/raspberry/d' conf/$cfg.mcf
           # after that all repositories will be cloned and conf/bblayers.conf generated
           build/scripts/mcf -f conf/$cfg
 
@@ -157,14 +157,14 @@ jobs:
           ros_distro=${{ inputs.ros_distro }}
           oe_release_series=${{ inputs.oe_release_series }}
           cfg=$distro-$ros_distro-$oe_release_series.mcf
-          echo "add machine ${{ inputs.machine }} to $distro-$ros_distro-$oe_release_series.mcf"
-          sed -i "s/^Machines = .*/Machines = ['${{ inputs.machine }}']/g" build/files/$distro-$ros_distro-$oe_release_series.mcf
-          echo "remove raspberrypi"
-          sed -i '/raspberry/d' build/files/$distro-$ros_distro-$oe_release_series.mcf
           if test ! -z ${{ inputs.meta_ros_repo_url }}; then export MCF_META_ROS_REPO_URL=${{ inputs.meta_ros_repo_url }}; fi
           if test ! -z ${{ inputs.meta_ros_branch }}; then export MCF_META_ROS_BRANCH=${{ inputs.meta_ros_branch }}; fi
           if test ! -z ${{ inputs.meta_ros_commit }}; then export MCF_META_ROS_COMMIT=${{ inputs.meta_ros_commit }}; fi
           cp build/files/$cfg conf/.
+          echo "add machine ${{ inputs.machine }} to conf/$cfg.mcf"
+          sed -i "s/^Machines = .*/Machines = ['${{ inputs.machine }}']/g" conf/$cfg.mcf
+          echo "remove raspberrypi"
+          sed -i '/raspberry/d' conf/$cfg.mcf
           # after that all repositories will be cloned and conf/bblayers.conf generated
           build/scripts/mcf -f conf/$cfg
 
