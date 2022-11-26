@@ -19,11 +19,6 @@ on:
         type: string
         default: 'honister'
         required: false
-      build_branch:
-        description: 'meta-ros build branch name'
-        type: string
-        default: 'build'
-        required: false
       meta_ros_repo_url:
         description: 'meta-ros repository URL'
         type: string
@@ -59,11 +54,11 @@ jobs:
     name: 'Build ROS Yocto image (part 1)'
     runs-on: ubuntu-20.04
     steps:
-      - name: 'Checkout ${{ inputs.build_branch }} branch'
+      - name: 'Checkout build branch'
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.build_branch }}
           path: build
+      - run: echo running on branch ${GITHUB_REF##*/}
 
       - name: 'Cache ros_common_artifacts'
         uses: actions/cache@v3
@@ -126,11 +121,11 @@ jobs:
     needs: build-part1
     runs-on: ubuntu-20.04
     steps:
-      - name: 'Checkout ${{ inputs.build_branch }} branch'
+      - name: 'Checkout build branch'
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.build_branch }}
           path: build
+      - run: echo running on branch ${GITHUB_REF##*/}
 
       - name: 'Retrieve cached ros_common_artifacts'
         uses: actions/cache@v3
