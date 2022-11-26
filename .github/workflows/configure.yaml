@@ -56,10 +56,10 @@ on:
         default: false
 jobs:
   build-part1:
-    name: Build ROS Yocto image (part 1)
+    name: 'Build ROS Yocto image (part 1)'
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout ${{ inputs.build_branch }} branch
+      - name: 'Checkout ${{ inputs.build_branch }} branch'
         uses: actions/checkout@v3
         with:
           ref: ${{ inputs.build_branch }}
@@ -71,7 +71,7 @@ jobs:
           path: /home/runner/work/ros_common_artifacts
           key: artifacts-key
 
-      - name: Install Yocto dependencies
+      - name: 'Install Yocto dependencies'
         run: |
           # see Packages needed to build an image on a headless system
           # https://docs.yoctoproject.org/ref-manual/system-requirements.html
@@ -82,7 +82,7 @@ jobs:
           # set locale, otherwise bitbake fails to run
           sudo locale-gen en_US.utf8
 
-      - name: Setup variables and clone repos
+      - name: 'Clone repos'
         run: |
           mkdir conf
           ln -snf ../conf build/.
@@ -102,12 +102,12 @@ jobs:
           build/scripts/mcf -f conf/$cfg
 
       # Enable debugging of manually-triggered workflows if debug_enabled option set
-      - name: Setup tmate session
+      - name: 'Setup tmate session'
         uses: mxschmitt/action-tmate@v3
         timeout-minutes: 15
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
 
-      - name: Source environment and build the image (Part 1)
+      - name: 'Source the environment and build the image (Part 1)'
         run: |
           cd $GITHUB_WORKSPACE
           source openembedded-core/oe-init-build-env
@@ -126,19 +126,19 @@ jobs:
     needs: build-part1
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout ${{ inputs.build_branch }} branch
+      - name: 'Checkout ${{ inputs.build_branch }} branch'
         uses: actions/checkout@v3
         with:
           ref: ${{ inputs.build_branch }}
           path: build
 
-      - name: 'Cache ros_common_artifacts'
+      - name: 'Retrieve cached ros_common_artifacts'
         uses: actions/cache@v3
         with:
           path: /home/runner/work/ros_common_artifacts
           key: artifacts-key
 
-      - name: Install Yocto dependencies
+      - name: 'Install Yocto dependencies'
         run: |
           # see Packages needed to build an image on a headless system
           # https://docs.yoctoproject.org/ref-manual/system-requirements.html
@@ -149,7 +149,7 @@ jobs:
           # set locale, otherwise bitbake fails to run
           sudo locale-gen en_US.utf8
 
-      - name: Setup variables and clone repos
+      - name: 'Clone repos'
         run: |
           mkdir conf
           ln -snf ../conf build/.
@@ -168,7 +168,7 @@ jobs:
           # after that all repositories will be cloned and conf/bblayers.conf generated
           build/scripts/mcf -f conf/$cfg
 
-      - name: Source environment and build the image (Part 2)
+      - name: 'Source the environment and build the image (Part 2)'
         run: |
           cd $GITHUB_WORKSPACE
           source openembedded-core/oe-init-build-env
@@ -177,3 +177,11 @@ jobs:
           echo "in https://github.com/ros/meta-ros/wiki/OpenEmbedded-Build-Instructions" 
           cat ./build/.github/workflows/ros-additions.conf >> ./conf/local.conf
           bitbake ${{ inputs.image }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: 'Upload ${{ inputs.image }}'
+          path: |
+            $GITHUB_WORKSPACE/tmp/deploy/images/${{ inputs.machine }}/bzImage
+            $GITHUB_WORKSPACE/tmp/deploy/images/${{ inputs.machine }}/${{ inputs.image }}-${{ inputs.ros_distro }}-${{ inputs.machine }}.qemuboot.conf
+            $GITHUB_WORKSPACE/tmp/deploy/images/${{ inputs.machine }}/${{ inputs.image }}-${{ inputs.ros_distro }}-${{ inputs.machine }}.ext4
