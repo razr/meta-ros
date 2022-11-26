@@ -89,10 +89,10 @@ jobs:
           if test ! -z ${{ inputs.meta_ros_branch }}; then export MCF_META_ROS_BRANCH=${{ inputs.meta_ros_branch }}; fi
           if test ! -z ${{ inputs.meta_ros_commit }}; then export MCF_META_ROS_COMMIT=${{ inputs.meta_ros_commit }}; fi
           cp build/files/$cfg conf/.
-          echo "add machine ${{ inputs.machine }} to conf/$cfg.mcf"
-          sed -i "s/^Machines = .*/Machines = ['${{ inputs.machine }}']/g" conf/$cfg.mcf
+          echo "add machine ${{ inputs.machine }} to conf/$cfg"
+          sed -i "s/^Machines = .*/Machines = ['${{ inputs.machine }}']/g" conf/$cfg
           echo "remove raspberrypi"
-          sed -i '/raspberry/d' conf/$cfg.mcf
+          sed -i '/raspberry/d' conf/$cfg
           # after that all repositories will be cloned and conf/bblayers.conf generated
           build/scripts/mcf -f conf/$cfg
 
@@ -156,10 +156,10 @@ jobs:
           if test ! -z ${{ inputs.meta_ros_branch }}; then export MCF_META_ROS_BRANCH=${{ inputs.meta_ros_branch }}; fi
           if test ! -z ${{ inputs.meta_ros_commit }}; then export MCF_META_ROS_COMMIT=${{ inputs.meta_ros_commit }}; fi
           cp build/files/$cfg conf/.
-          echo "add machine ${{ inputs.machine }} to conf/$cfg.mcf"
-          sed -i "s/^Machines = .*/Machines = ['${{ inputs.machine }}']/g" conf/$cfg.mcf
+          echo "add machine ${{ inputs.machine }} to conf/$cfg"
+          sed -i "s/^Machines = .*/Machines = ['${{ inputs.machine }}']/g" conf/$cfg
           echo "remove raspberrypi"
-          sed -i '/raspberry/d' conf/$cfg.mcf
+          sed -i '/raspberry/d' conf/$cfg
           # after that all repositories will be cloned and conf/bblayers.conf generated
           build/scripts/mcf -f conf/$cfg
 
