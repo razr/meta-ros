@@ -6,57 +6,57 @@ on:
     inputs:
       distro:
         description: 'OpenEmbedded distro (ros1, ros2, or webos)'
+        type: string
         default: 'ros2'
         required: false
-        type: string
       ros_distro:
         description: 'ROS distro (melodic, noetic, dashing, eloquent, foxy, galactic, humble, or rolling)'
+        type: string
         default: 'humble'
         required: false
-        type: string
       oe_release_series:
         description: 'OpenEmbedded release series (dunfell, gatesgarth, hardknott, honister, kirkstone, langdale, or mickledore)'
+        type: string
         default: 'honister'
         required: false
-        type: string
       build_branch:
         description: 'meta-ros build branch name'
+        type: string
         default: 'build'
         required: false
-        type: string
       meta_ros_repo_url:
         description: 'meta-ros repository URL'
+        type: string
         default: ''
         required: false
-        type: string
       meta_ros_branch:
         description: 'meta-ros branch name'
+        type: string
         default: ''
         required: false
-        type: string
       meta_ros_commit:
-        type: string
         description: 'meta-ros commit id (use HEAD if in doubt)'
-        default: ''
-        required: false
-      machine:
         type: string
+        required: false
+        default: ''
+      machine:
         description: 'machine (qemux86-64, or raspberrypi4-64)'
+        type: string
         default: 'qemux86-64'
         required: false
       image:
-        type: string
         description: 'image to build (ros-image-core, or ros-image-world)'
+        type: string
         default: 'ros-image-core'
         required: false
       debug_enabled:
-        type: boolean
         description: 'Run the build with tmate debugging enabled'     
+        type: boolean
         required: false
         default: false
 jobs:
   build-part1:
-    name: Configure Yocto Build
+    name: Build ROS Yocto image (part 1)
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout ${{ inputs.build_branch }} branch
@@ -82,7 +82,7 @@ jobs:
           # set locale, otherwise bitbake fails to run
           sudo locale-gen en_US.utf8
 
-      - name: Setup variable and clone repos
+      - name: Setup variables and clone repos
         run: |
           mkdir conf
           ln -snf ../conf build/.
@@ -90,9 +90,9 @@ jobs:
           ros_distro=${{ inputs.ros_distro }}
           oe_release_series=${{ inputs.oe_release_series }}
           cfg=$distro-$ros_distro-$oe_release_series.mcf
-          # add machine
+          echo "add machine ${{ inputs.machine }} to $distro-$ros_distro-$oe_release_series.mcf"
           sed -i "s/^Machines = .*/Machines = ['${{ inputs.machine }}']/g" build/files/$distro-$ros_distro-$oe_release_series.mcf
-          # remove raspberrypi
+          echo "remove raspberrypi"
           sed -i '/raspberry/d' build/files/$distro-$ros_distro-$oe_release_series.mcf
           if test ! -z ${{ inputs.meta_ros_repo_url }}; then export MCF_META_ROS_REPO_URL=${{ inputs.meta_ros_repo_url }}; fi
           if test ! -z ${{ inputs.meta_ros_branch }}; then export MCF_META_ROS_BRANCH=${{ inputs.meta_ros_branch }}; fi
@@ -107,16 +107,73 @@ jobs:
         timeout-minutes: 15
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
 
-      - name: Source environment adn build the first part of the image
+      - name: Source environment and build the image (Part 1)
         run: |
           cd $GITHUB_WORKSPACE
           source openembedded-core/oe-init-build-env
           cd ..
-          # add ROS specific defines as described
-          # in https://github.com/ros/meta-ros/wiki/OpenEmbedded-Build-Instructions 
+          echo "add ROS specific defines as described"
+          echo "in https://github.com/ros/meta-ros/wiki/OpenEmbedded-Build-Instructions" 
           cat ./build/.github/workflows/ros-additions.conf >> ./conf/local.conf
-          # fetch and upack all packages
+          echo "fetch and unpack all packages"
           bitbake ${{ inputs.image }} --runall=fetch
           bitbake ${{ inputs.image }} --runall=fetch --runall=unpack
-          # build native packages only
+          echo "build native packages only"
           bitbake `cat build/.github/workflows/native-packages.list | tr '\n' ' '`
+
+  build-part2:
+    name: Build ROS Yocto image (part 2)
+    needs: build-part1
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout ${{ inputs.build_branch }} branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.build_branch }}
+          path: build
+
+      - name: 'Cache ros_common_artifacts'
+        uses: actions/cache@v3
+        with:
+          path: /home/runner/work/ros_common_artifacts
+          key: artifacts-key
+
+      - name: Install Yocto dependencies
+        run: |
+          # see Packages needed to build an image on a headless system
+          # https://docs.yoctoproject.org/ref-manual/system-requirements.html
+          sudo apt-get update
+          sudo apt-get install -y gawk wget git-core diffstat unzip texinfo gcc-multilib \
+            build-essential chrpath socat cpio python python3 python3-pip python3-pexpect \
+            locales lz4 zstd
+          # set locale, otherwise bitbake fails to run
+          sudo locale-gen en_US.utf8
+
+      - name: Setup variables and clone repos
+        run: |
+          mkdir conf
+          ln -snf ../conf build/.
+          distro=${{ inputs.distro }}
+          ros_distro=${{ inputs.ros_distro }}
+          oe_release_series=${{ inputs.oe_release_series }}
+          cfg=$distro-$ros_distro-$oe_release_series.mcf
+          echo "add machine ${{ inputs.machine }} to $distro-$ros_distro-$oe_release_series.mcf"
+          sed -i "s/^Machines = .*/Machines = ['${{ inputs.machine }}']/g" build/files/$distro-$ros_distro-$oe_release_series.mcf
+          echo "remove raspberrypi"
+          sed -i '/raspberry/d' build/files/$distro-$ros_distro-$oe_release_series.mcf
+          if test ! -z ${{ inputs.meta_ros_repo_url }}; then export MCF_META_ROS_REPO_URL=${{ inputs.meta_ros_repo_url }}; fi
+          if test ! -z ${{ inputs.meta_ros_branch }}; then export MCF_META_ROS_BRANCH=${{ inputs.meta_ros_branch }}; fi
+          if test ! -z ${{ inputs.meta_ros_commit }}; then export MCF_META_ROS_COMMIT=${{ inputs.meta_ros_commit }}; fi
+          cp build/files/$cfg conf/.
+          # after that all repositories will be cloned and conf/bblayers.conf generated
+          build/scripts/mcf -f conf/$cfg
+
+      - name: Source environment and build the image (Part 2)
+        run: |
+          cd $GITHUB_WORKSPACE
+          source openembedded-core/oe-init-build-env
+          cd ..
+          echo "add ROS specific defines as described"
+          echo "in https://github.com/ros/meta-ros/wiki/OpenEmbedded-Build-Instructions" 
+          cat ./build/.github/workflows/ros-additions.conf >> ./conf/local.conf
+          bitbake ${{ inputs.image }}
