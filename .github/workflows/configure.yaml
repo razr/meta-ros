@@ -111,7 +111,6 @@ jobs:
           echo "in https://github.com/ros/meta-ros/wiki/OpenEmbedded-Build-Instructions" 
           cat ./build/.github/workflows/ros-additions.conf >> ./conf/local.conf
           echo "fetch and unpack all packages"
-          bitbake ${{ inputs.image }} --runall=fetch
           bitbake ${{ inputs.image }} --runall=fetch --runall=unpack
           echo "build native packages only"
           bitbake `cat build/.github/workflows/native-packages.list | tr '\n' ' '`
