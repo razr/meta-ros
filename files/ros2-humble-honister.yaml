@@ -1,0 +1,31 @@
+header:
+  version: 11
+
+machine: qemu86-64
+distro: ros2
+target: ros2-image-core
+
+repos:
+  bitbake:
+    url: https://github.com/openembedded/bitbake.git
+    refspec: 44a83b373e1fc34c93cd4a6c6cf8b73b230c1520
+  openembedded-core:
+    url: https://github.com/openembedded/openembedded-core.git
+    refspec: 70384dd958c57d1da924a66cffa35f80eb60d4b0
+  meta-openembedded:
+    url: http://git.openembedded.org/meta-openembedded
+    refspec: f632403d1800363ac63a1ad5543278b82c659832
+    path: meta-openembedded
+    layers:
+      meta:
+      meta-oe:
+      meta-python:
+bblayers_conf_header:
+  custom-bblayers-conf: |
+    BBFILE_PRIORITY_core_forcevariable = "5"
+    BBFILE_PRIORITY_openembedded-layer_forcevariable = "10"
+    BBFILE_PRIORITY_meta-python_forcevariable = "13"
+local_conf_header:
+  standard: |
+    CONF_VERSION = "1"
+    SDKMACHINE = "x86_64"
